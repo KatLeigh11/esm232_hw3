@@ -1,0 +1,53 @@
+---
+title: "sensitivity_analysis_almond_model"
+author: "Kat Leigh"
+date: "4/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(devtools)
+
+source(here('mau verz.Rmd'))
+
+```
+
+```{r}
+#  rnorm( ) function, where n=500, the mean is equal to the parameter (0.0043), and the standard deviation is 0.001.
+
+# read in climate data
+climate_df <- read.delim(here('clim.txt'), sep = ' ')
+
+# make the random data for the sensitivity analysis
+coef_p2 <- 0.0043 # set the mean
+
+# Step 1  create data frame to store results 
+# how many simulations
+number_runs <-  500
+
+#create a dataframe that has rows for each model run
+# columns for value of coef_p2
+yield_anomalies_sensitivity_res <-  as.data.frame(matrix(nrow=number_runs, ncol=1))
+colnames(yield_anomalies_sensitivity_res) <- 'coef_p2'
+
+# Step 2 - generate the test data
+test_coef_p2 <- rnorm(n=number_runs, mean=coef_p2, sd=0.001)
+
+yield_anomalies_sensitivity_res$coef_p2 <-  test_coef_p2
+
+# Step 3 - apply model to get anomolies for each coef_p2 value
+yield_anomalies_sensitivity_res_test <-  test_coef_p2 %>%
+  map_dfc(~almond_anomaly(coef_p2=test_coef_p2, climate_df=c(rep(climate_df, 500))))
+
+head(yield_anomalies_sensitivity_res)
+# turn it into a data frame to support adding colums
+colnames(yield_anomalies_sensitivity_res) <- test_coef_p2
+
+
+
+```
+
