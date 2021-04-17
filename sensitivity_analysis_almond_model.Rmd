@@ -12,8 +12,8 @@ library(tidyverse)
 library(here)
 library(devtools)
 
-source(here('mau verz.Rmd'))
-
+# source(here('mau verz.Rmd'))
+source("almond_anomaly.R")
 ```
 
 ```{r}
@@ -39,9 +39,14 @@ test_coef_p2 <- rnorm(n=number_runs, mean=coef_p2, sd=0.001)
 
 yield_anomalies_sensitivity_res$coef_p2 <-  test_coef_p2
 
-# Step 3 - apply model to get anomolies for each coef_p2 value
+# Step 3 - apply model to get anomalies for each coef_p2 value
+#yield_anomalies_sensitivity_res_test <-  test_coef_p2 %>%
+#  map_dfc(~almond_anomaly(coef_p2=test_coef_p2, climate_df=c(rep(climate_df, 500))))
+
+# Step 3 - apply model to get anomalies for each coef_p2 value ~ Did this with one of the ways Naomi did in class
 yield_anomalies_sensitivity_res_test <-  test_coef_p2 %>%
-  map_dfc(~almond_anomaly(coef_p2=test_coef_p2, climate_df=c(rep(climate_df, 500))))
+  map_dfc(~almond_anomaly(climate_df, coef_p2 = .x))
+
 
 head(yield_anomalies_sensitivity_res)
 # turn it into a data frame to support adding colums
